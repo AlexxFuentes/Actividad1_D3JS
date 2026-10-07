@@ -23,3 +23,47 @@ h1 {
     font-size: 20px;
     margin: 0 0 2px
 }
+
+
+
+
+/* ==========================================
+   ESTILOS DEL GRÁFICO
+   ========================================== */
+
+#grafico {
+    width: 100%;
+    max-width: 1000px;
+    margin: 30px auto;
+    background: var(--card);
+    padding: 20px;
+    border-radius: 10px;
+    box-sizing: border-box;
+}
+
+/* Barras del gráfico */
+.barra {
+    fill: var(--sub);
+}
+
+/* Efecto al pasar el mouse */
+.barra:hover {
+    fill: var(--mut);
+}
+
+/* Valores de las barras */
+.valor {
+    font-size: 12px;
+    font-weight: bold;
+    fill: var(--fg);
+}
+
+/* Ejes */
+.axis text {
+    font-size: 12px;
+}
+
+.axis path,
+.axis line {
+    stroke: var(--grid);
+}
