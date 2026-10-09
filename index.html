@@ -10,8 +10,56 @@
 
 <body>
     <h1>Dashboard de ventas (Actividad 1)</h1>
+    <!-- <p class="s" id="sub">Cargando datos…</p> -->
+    <div class="kp" id="kp"></div>
+    <div id="tip"></div>
 
-    <script src="app.js"></script>
+    <div class="g">
+        <div class="c">
+            <h2>Georreferenciación de clientes</h2>
+            <div id="map"></div>
+        </div>
+        <div class="c">
+            <h2>Top productos más vendidos</h2>
+            <div id="top"></div>
+        </div>
+        <!-- <div class="c">
+            <h2>Evolución semanal</h2>
+            <div id="evo"></div>
+            <p class="n">Responde al filtro de ciudad. Las semanas de los extremos están incompletas.</p>
+        </div> -->
+        <div class="c">
+            <h2>Comparativo mensual por ciudad</h2>
+            <div id="mes"></div>
+            <div class="lg" id="lgc"></div>
+            <!-- <p class="n" id="nm"></p> -->
+        </div>
+        <!-- <div class="c">
+            <h2>Estado de la venta (pedido)</h2>
+            <div id="est"></div>
+            <p class="n">100 % de los pedidos figuran como entregados; no hay variación que analizar.</p>
+        </div> -->
+        <div class="c">
+            <h2>¿Cuánto cuesta enviar?</h2>
+            <div id="env"></div>
+            <p id="envx" class="n"></p>
+        </div>
+        <!-- <div class="c">
+            <h2>Método de pago</h2>
+            <div id="pago"></div>
+            <div class="lg" id="lgp"></div>
+            <p class="n">Todos tienen tarjeta y PayPal registrados, pero todas las compras se pagaron con tarjeta.</p>
+        </div>
+        <div class="c">
+            <h2>Categorías favoritas vs ventas</h2>
+            <div id="cat"></div>
+            <div class="lg" id="lgk"></div>
+            <p class="n">Mochila se clasificó como «ropa» (supuesto mío). Responde a ciudad y mes.</p>
+        </div> -->
+    </div>
+
+    <script src = "https://d3js.org/d3.v7.min.js"></script>
+    <script src="main.js"></script>
 </body>
 
 </html>

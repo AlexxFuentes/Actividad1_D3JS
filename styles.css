@@ -1,3 +1,4 @@
+/* styles.css — estilos del dashboard (tema claro/oscuro con variables CSS) */
 :root {
     --bg: #fff;
     --fg: #1d2433;
@@ -11,6 +12,32 @@
     padding-bottom: env(safe-area-inset-bottom, 0px)
 }
 
+@media (prefers-color-scheme:dark) {
+    :root:not([data-theme="light"]) {
+        --bg: #12151c;
+        --fg: #e8ebf2;
+        --mut: #3a4152;
+        --sub: #9aa3b5;
+        --card: #1b2029;
+        --grid: #2a3040;
+        --acc: #6b9bff
+    }
+}
+
+:root[data-theme="dark"] {
+    --bg: #12151c;
+    --fg: #e8ebf2;
+    --mut: #3a4152;
+    --sub: #9aa3b5;
+    --card: #1b2029;
+    --grid: #2a3040;
+    --acc: #6b9bff
+}
+
+html {
+    scroll-padding-top: env(safe-area-inset-top, 0px)
+}
+
 body {
     margin: 0;
     background: var(--bg);
@@ -22,4 +49,156 @@ body {
 h1 {
     font-size: 20px;
     margin: 0 0 2px
+}
+
+.s {
+    color: var(--sub);
+    font-size: 12px;
+    margin: 0 0 10px
+}
+
+.bar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 12px
+}
+
+button {
+    border: 1px solid var(--grid);
+    background: var(--card);
+    color: var(--fg);
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font: inherit
+}
+
+button.on {
+    background: var(--acc);
+    color: #fff;
+    border-color: var(--acc)
+}
+
+.kp {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 8px;
+    margin-bottom: 12px
+}
+
+.kp div {
+    background: var(--card);
+    border-radius: 8px;
+    padding: 8px 10px
+}
+
+.kp b {
+    display: block;
+    font-size: 19px
+}
+
+.kp span {
+    font-size: 11px;
+    color: var(--sub)
+}
+
+.g {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+    gap: 12px
+}
+
+.c {
+    background: var(--card);
+    border-radius: 10px;
+    padding: 12px;
+    min-width: 0
+}
+
+h2 {
+    font-size: 14px;
+    margin: 0 0 4px
+}
+
+.n {
+    font-size: 11px;
+    color: var(--sub);
+    margin: 4px 0 0
+}
+
+svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    overflow: visible
+}
+
+.lb {
+    font-size: 11px;
+    fill: var(--fg)
+}
+
+.ax text {
+    fill: var(--sub);
+    font-size: 10px
+}
+
+.ax path,
+.ax line {
+    stroke: var(--grid)
+}
+
+.big {
+    font-size: 22px;
+    font-weight: 600;
+    fill: var(--fg)
+}
+
+.lg span {
+    margin-right: 10px;
+    font-size: 11px
+}
+
+.lg i {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    margin-right: 4px
+}
+
+/* #tip {
+    position: fixed;
+    pointer-events: none;
+    opacity: 0;
+    background: var(--fg);
+    color: var(--bg);
+    padding: 5px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    z-index: 9
+} */
+
+#tip {
+    position: absolute;
+    visibility: hidden;
+    pointer-events: none;
+    background: var(--fg);
+    color: var(--bg);
+    padding: 5px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    z-index: 9;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .mapa-base {
+        filter: invert(85%);
+    }
+}
+
+:root[data-theme="dark"] .mapa-base {
+    filter: invert(85%);
 }
