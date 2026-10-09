@@ -1,7 +1,11 @@
 document.addEventListener("DOMContentLoaded", iniciar_app);
 
+/*
+Constantes
+    - Meses
+    - Categorias:
+*/
 const MESES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
-
 const CATEGORIAS = {
     "Smartphone": "electrónicos",
     "Laptop": "electrónicos",
@@ -12,29 +16,47 @@ const CATEGORIAS = {
     "Mochila": "ropa"
 };
 
+/*
+Carga de datos
+*/
 function cargar_datos() {
     return d3.json("../data/resultado_fusionado.json")
 }
 
 function iniciar_app() {
-
+    // cargamos los datos y procesamos la información
     cargar_datos().then((data) => {
-        // console.log("Datos cargados correctamente.");
         // console.log(data.clientes);
         // procesar_data(data)
-        iniciar(procesar_data(data));
+        d3.select("#sub")
+            .style("color", "#66DD33")
+            .text("Cargando datos…");
+
+        // Simulamos carga de datos con un retraso de 1 segundo para mostrar el mensaje de carga
+        setTimeout(() => {
+            iniciar(procesar_data(data));
+            // console.log("Datos cargados correctamente.");
+            d3.select("#sub")
+                .style("color", "#FFFFFF")
+                .text("");
+        }, 1000);
     }
     ).catch(err => {
         // console.error(err);
         d3.select("#sub")
-            .style("color", "#d33")
+            .style("color", "rgb(221, 51, 51)")
             .text("No se pudo cargar los datos.");
     });
-
 }
 
 function procesar_data(data) {
-
+    /*
+    Preparamos los datos para el dashboard:
+    - ventas: lista de compras con información del cliente, ciudad, fecha, producto, unidades, total, costo de envío, seguro, estatus y método de pago
+    - meses: lista de meses únicos en las compras
+    - ciudades: lista de ciudades únicas en las compras
+    - categorias: lista de categorías únicas en las preferencias de los clientes
+    */
     const clientes = data.clientes
     // solo compras utilizables (con fecha y al menos un artículo)
     const esValida = compra => compra.fecha && compra.articulos && compra.articulos.length
@@ -71,34 +93,55 @@ function procesar_data(data) {
 }
 
 function iniciar(data_procesada) {
+    /*
+    Iniciamos el dashboard con los datos procesados
+
+    - extracion de los datos procesados
+        ventas, ciudades, meses, categorias, clientes
+    */
     const { ventas, ciudades, meses, categorias, clientes } = data_procesada;
 
+    // Funciones auxiliares para dibujar gráficos y mostrar KPIs
     const $ = id => d3.select("#" + id)
     const fmtEntero = d3.format(",.0f")
     const fmtPct = d3.format(".1%")
-    const colorDe = d3.scaleOrdinal(d3.schemeTableau10)
+    // formatos
     const fmtDinero = v => "$" + fmtEntero(v)
     const dividir = (a, b) => b ? a / b : 0
     const tooltip = d3.select("#tip")
+    const sumarPor = (ventas, clave, campo) =>
+        d3.rollup(ventas, v => d3.sum(v, d => d[campo]), d => d[clave]);// Map: clave -> suma del campo
+    // colores
+    const colorDe = d3.scaleOrdinal(d3.schemeTableau10)
     colorDe.domain(ciudades)   // mismo color por ciudad en el mapa y en el comparativo mensual
     const AZUL = d3.schemeTableau10[0]
     const NARANJA = d3.schemeTableau10[1]
-    const sumarPor = (ventas, clave, campo) =>
-        d3.rollup(ventas, v => d3.sum(v, d => d[campo]), d => d[clave]);// Map: clave -> suma del campo
 
+    /*
+    Nos permite crear un lienzo SVG dentro de un contenedor con un id específico, 
+    estableciendo el alto y ancho del SVG. 
+    El contenedor se limpia antes de agregar el nuevo SVG.
+    */
     function crearSvg(id, alto, ancho = 440) {
         const contenedor = $(id);
         contenedor.selectAll("*").remove();
         return contenedor.append("svg").attr("viewBox", `0 0 ${ancho} ${alto}`);
     }
 
+    // Función para crear una leyenda en un contenedor con un id específico,
     function leyenda(id, textos, colores = [AZUL, NARANJA]) {
         d3.select("#" + id)
-            .html(textos.map((t, i) =>
-                `<span><i style="background:${colores[i]}"></i>${t}</span>`).join("")
+            .html(
+                textos.map((t, i) =>
+                    `<span><i style="background:${colores[i]}"></i>${t}</span>`
+                ).join("")
             );
     }
 
+    /*
+    Función para crear un gráfico de barras en un contenedor con un id específico,
+    utilizando una serie de datos y un formato para los valores.
+    */
     function barras(id, serie, formato) {
         // serie: [{etiqueta, valor}]
         const lienzo = crearSvg(id, serie.length * 30 + 10)
@@ -128,6 +171,9 @@ function iniciar(data_procesada) {
             .text(d => formato(d.valor));
     }
 
+    /*
+    Funcion para crear un gráfico de barras agrupadas en un contenedor con un id específico.
+    */
     function barrasAgrupadas(id, nombres, serieA, serieB) {
         // dos barras (proporciones 0-1) por nombre
         const lienzo = crearSvg(id, nombres.length * 54 + 10)
@@ -161,7 +207,33 @@ function iniciar(data_procesada) {
         });
     }
 
-    function dibujarMensual() {
+    /*
+    Genera los kpis a partir de los datos de ventas
+    */
+    function kpi() {
+        const ingreso = d3.sum(ventas, v => v.total)
+        const nCompras = ventas.length
+        const nClientes = new Set(ventas.map(v => v.clienteId)).size
+
+        const kpis = [
+            [fmtEntero(nClientes), "Clientes atendidos"],
+            [fmtDinero(ingreso), "Ingreso"],
+            [fmtEntero(nCompras), "Compras"],
+            [fmtDinero(dividir(ingreso, nCompras)), "Ticket promedio"],
+            [dividir(nCompras, nClientes).toFixed(1), "Compras por cliente"],
+            ["$" + d3.mean(ventas, v => v.costoEnvio).toFixed(2), "Envío promedio"]
+        ];
+
+        $("kp").html(
+            kpis.map(k => `<div><b>${k[0]}</b><span>${k[1]}</span></div>`)
+                .join("")
+        );
+    }
+
+    /*
+    Genera un gráfico de comparación mensual de ingresos y costos de envío
+    */
+    function dibujarComparativoMensual() {
         const serie = meses.map((mes, i) => {
             const delMes = ventas.filter(v => v.mes == mes);
             const fila = {
@@ -170,8 +242,8 @@ function iniciar(data_procesada) {
                 clientes: new Set(delMes.map(v => v.clienteId)).size
             };
 
-            ciudades.forEach(ciudad => fila[ciudad] =
-                d3.sum(delMes.filter(v => v.ciudad == ciudad), v => v.total)
+            ciudades.forEach(ciudad =>
+                fila[ciudad] = d3.sum(delMes.filter(v => v.ciudad == ciudad), v => v.total)
             );
             return fila;
         })
@@ -217,7 +289,7 @@ function iniciar(data_procesada) {
             .attr("dy", 11)
             .text((d, i) => i &&
                 serie[i - 1].total ? (d.total >= serie[i - 1].total ? "+" : "")
-                + fmtPct(d.total / serie[i - 1].total - 1) : ""
+            + fmtPct(d.total / serie[i - 1].total - 1) : ""
             );
 
         textos.append("tspan")
@@ -229,35 +301,21 @@ function iniciar(data_procesada) {
         leyenda("lgc", ciudades, ciudades.map(colorDe));
     }
 
-    function kpi() {
-        const ingreso = d3.sum(ventas, v => v.total)
-        const nCompras = ventas.length
-        const nClientes = new Set(ventas.map(v => v.clienteId)).size
-
-        const kpis = [
-            [fmtEntero(nClientes), "Clientes atendidos"],
-            [fmtDinero(ingreso), "Ingreso"],
-            [fmtEntero(nCompras), "Compras"],
-            [fmtDinero(dividir(ingreso, nCompras)), "Ticket promedio"],
-            [dividir(nCompras, nClientes).toFixed(1), "Compras por cliente"],
-            ["$" + d3.mean(ventas, v => v.costoEnvio).toFixed(2), "Envío promedio"]
-        ];
-
-        $("kp").html(
-            kpis.map(k => `<div><b>${k[0]}</b><span>${k[1]}</span></div>`)
-            .join("")
-        );
-    }
-
+    /*
+    Función para dibujar un gráfico de barras que muestra los productos más vendidos en términos de unidades, ordenados de mayor a menor.
+    */
     function dibujarTopProductos() {
         const unidades = [...sumarPor(ventas, "producto", "unidades")]
             .map(([etiqueta, valor]) => ({ etiqueta, valor }));
         barras(
             "top", unidades.sort((a, b) => b.valor - a.valor)
-            .slice(0, 10), v => fmtEntero(v) + " uds."
+                .slice(0, 10), v => fmtEntero(v) + " uds."
         );
     }
 
+    /*
+    Función para dibujar un gráfico de barras que muestra el costo medio de envío por ciudad, así como información adicional sobre envíos con y sin seguro.
+    */
     function dibujarEnvio() {
         const costoMedio = [
             ...d3.rollup(ventas, v => d3.mean(v, d => d.costoEnvio), d => d.ciudad)
@@ -269,9 +327,12 @@ function iniciar(data_procesada) {
         const sinSeguro = ventas.filter(v => !v.conSeguro)
 
         $("envx")
-        .html(`Con seguro: <b>$${(d3.mean(conSeguro, v => v.costoEnvio) || 0).toFixed(2)}</b> · sin seguro: <b>$${(d3.mean(sinSeguro, v => v.costoEnvio) || 0).toFixed(2)}</b> · el envío equivale al <b>${fmtPct(dividir(d3.sum(ventas, v => v.costoEnvio), d3.sum(ventas, v => v.total)))}</b> del ingreso.`);
+            .html(`Con seguro: <b>$${(d3.mean(conSeguro, v => v.costoEnvio) || 0).toFixed(2)}</b> · sin seguro: <b>$${(d3.mean(sinSeguro, v => v.costoEnvio) || 0).toFixed(2)}</b> · el envío equivale al <b>${fmtPct(dividir(d3.sum(ventas, v => v.costoEnvio), d3.sum(ventas, v => v.total)))}</b> del ingreso.`);
     }
 
+    /*
+    Función para dibujar un mapa de México con burbujas que representan la cantidad de compras y el ingreso total por ciudad.
+    */
     function dibujarMapa() {
         const ancho = 700
         const alto = 400
@@ -349,6 +410,9 @@ function iniciar(data_procesada) {
             .attr("r", d => radio(d.cantidad))
     }
 
+    /*
+    Función para dibujar un gráfico de evolución mensual de ingresos y costos de envío.
+    */
     function dibujarEvolucionMensual() {
         const serie = meses.map((mes, i) => {
             const delMes = ventas.filter(v => v.mes == mes)
@@ -357,13 +421,13 @@ function iniciar(data_procesada) {
                 etiqueta: MESES[+mes.slice(5) - 1] + (i == meses.length - 1 ? "*" : ""),
                 ingreso,
                 costoEnvio: d3.sum(delMes, v => v.costoEnvio),
-                ticket: dividir(ingreso, delMes.length) // ingreso promedio por compra
+                // ticket: dividir(ingreso, delMes.length) // ingreso promedio por compra
             };
         })
         // panel por indicador
         const paneles = [
             { campo: "ingreso", titulo: "Ingreso", color: "var(--acc)" },
-            { campo: "costoEnvio", titulo: "Costo de envío", color: d3.schemeTableau10[2] }
+            { campo: "costoEnvio", titulo: "Costo de envío", color: d3.schemeTableau10[2] },
         ]
         const altoPanel = 100
         const separacion = 14
@@ -425,6 +489,9 @@ function iniciar(data_procesada) {
             .call(d3.axisBottom(escX).tickSize(3));   // meses: solo en el último panel
     }
 
+    /*
+    Función para dibujar un gráfico de barras agrupadas que compara las categorías favoritas de los clientes con las ventas totales por categoría.
+    */
     function dibujarCategorias() {
         const ingresoTotal = d3.sum(ventas, v => v.total)
 
@@ -445,8 +512,11 @@ function iniciar(data_procesada) {
         leyenda("lgk", ["% de clientes que la eligen como favorita", "% del ingreso"]);
     }
 
+    /*
+        Llamamos a las funciones para dibujar los gráficos y mostrar los KPIs
+    */
     kpi();
-    dibujarMensual();
+    dibujarComparativoMensual();
     dibujarTopProductos();
     dibujarEnvio();
     dibujarMapa();
