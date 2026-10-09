@@ -24,6 +24,59 @@ h1 {
     margin: 0 0 2px
 }
 
-.axis line {
-    stroke: var(--grid);
+header p {
+    color: #666;
+}
+
+.dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+    gap: 20px;
+    padding: 25px;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.card h2 {
+    margin-top: 0;
+    font-size: 19px;
+}
+
+svg {
+    width: 100%;
+    height: auto;
+}
+
+.axis text {
+    font-size: 12px;
+}
+
+#tooltip {
+    position: absolute;
+    visibility: hidden;
+    background: rgba(0,0,0,0.85);
+    color: white;
+    padding: 10px 12px;
+    border-radius: 6px;
+    pointer-events: none;
+    font-size: 13px;
+}
+
+.estado {
+    fill: #e5e7eb;
+    stroke: #ffffff;
+    stroke-width: 1;
+}
+
+.burbuja-ciudad {
+    fill: steelblue;
+    stroke: white;
+    stroke-width: 2;
+    opacity: 0.85;
+    cursor: pointer;
 }

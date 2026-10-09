@@ -1,17 +1,65 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Activdad 1</title>
+    <title>Dashboard de ventas - D3.js</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 
 <body>
-    <h1>Dashboard de ventas (Actividad 1)</h1>
 
-    <script src="app.js"></script>
+    <header>
+        <h1>Dashboard de análisis de compras</h1>
+        <p>Análisis interactivo de clientes, productos y operaciones comerciales</p>
+    </header>
+
+    <main class="dashboard">
+
+        <section class="card">
+            <h2> Distribución geográfica</h2>
+            <div id="grafico-mapa"></div>
+        </section>
+
+        <section class="card">
+            <h2> Top 10 productos más vendidos</h2>
+            <div id="grafico-productos"></div>
+        </section>
+
+        <section class="card">
+            <h2> Evolución de ventas</h2>
+            <div id="grafico-evolucion"></div>
+        </section>
+
+        <section class="card">
+            <h2> Comparativo mensual</h2>
+            <div id="grafico-mensual"></div>
+        </section>
+
+        <section class="card">
+            <h2> Estado de pedidos</h2>
+            <div id="grafico-estados"></div>
+        </section>
+
+        <section class="card">
+            <h2> Costos de envío</h2>
+            <div id="grafico-envios"></div>
+        </section>
+
+        <section class="card">
+            <h2> Métodos de pago</h2>
+            <div id="grafico-pagos"></div>
+        </section>
+
+        <section class="card">
+            <h2> Categorías favoritas</h2>
+            <div id="grafico-categorias"></div>
+        </section>
+
+    </main>
+    <div id="tooltip"></div>
+    <script src="main.js"></script>
 </body>
-
 </html>
