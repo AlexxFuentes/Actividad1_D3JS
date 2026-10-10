@@ -25,7 +25,7 @@
     }
 }
 
-/* :root[data-theme="dark"] {
+:root[data-theme="dark"] {
     --bg: #12151c;
     --fg: #e8ebf2;
     --mut: #3a4152;
@@ -33,7 +33,7 @@
     --card: #1b2029;
     --grid: #2a3040;
     --acc: #6b9bff
-} */
+}
 
 @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) .mapa-base {
@@ -44,7 +44,6 @@
 :root[data-theme="dark"] .mapa-base {
     filter: invert(85%);
 }
-
 
 html {
     scroll-padding-top: env(safe-area-inset-top, 0px)
@@ -58,11 +57,13 @@ body {
     padding: 16px
 }
 
+/* Título principal del dashboard */
 h1 {
     font-size: 20px;
     margin: 0 0 2px
 }
 
+/* .s — Subtítulo (texto pequeño bajo el h1) */
 .s {
     color: var(--sub);
     font-size: 12px;
@@ -77,22 +78,12 @@ h1 {
     margin-bottom: 12px
 }
 
-button {
-    border: 1px solid var(--grid);
-    background: var(--card);
-    color: var(--fg);
-    padding: 5px 10px;
-    border-radius: 6px;
-    cursor: pointer;
-    font: inherit
-}
 
-button.on {
-    background: var(--acc);
-    color: #fff;
-    border-color: var(--acc)
-}
+/*
+    Clases que nos permiten definir los estilos de los KPIs
+*/
 
+/* .kp — Grilla responsiva: columnas de mínimo 130px que se reparten el ancho */
 .kp {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
@@ -100,6 +91,7 @@ button.on {
     margin-bottom: 12px
 }
 
+/* Cada tarjeta de KPI */
 .kp div {
     background: var(--card);
     border-radius: 8px;
@@ -111,17 +103,22 @@ button.on {
     font-size: 19px
 }
 
+/* .kp span — Etiqueta/descripción del indicador */
 .kp span {
     font-size: 11px;
     color: var(--sub)
 }
 
+/*
+   Grilla principal de 3 columnas iguales para las tarjetas de gráficos.
+*/
 .g {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 12px
 }
 
+/* .c — Tarjeta contenedora de un gráfico */
 .c {
     background: var(--card);
     border-radius: 10px;
@@ -129,29 +126,38 @@ button.on {
     min-width: 0
 }
 
+/* Título de cada tarjeta */
 h2 {
     font-size: 14px;
     margin: 0 0 4px
 }
 
+/* .n — Nota al pie de la tarjeta (fuente, aclaraciones) */
 .n {
     font-size: 11px;
     color: var(--sub);
     margin: 4px 0 0
 }
 
+/* 
+    SVG, EJES, ETIQUETAS Y LEYENDAS
+*/
+
+/* SVG responsivo: ocupa el ancho de la tarjeta y mantiene su proporción */
 svg {
     width: 100%;
     height: auto;
-    display: block;
-    overflow: visible
+    display: block;     /* Elimina el espacio extra bajo el SVG */
+    overflow: visible   /* Deja que etiquetas/ejes se dibujen fuera del viewBox */
 }
 
+/* .lb — Etiquetas de datos dentro del gráfico */
 .lb {
     font-size: 11px;
     fill: var(--fg)
 }
 
+/* .ax — Grupo de eje: texto atenuado, líneas con color de cuadrícula */
 .ax text {
     fill: var(--sub);
     font-size: 10px
@@ -162,12 +168,14 @@ svg {
     stroke: var(--grid)
 }
 
+/* .big — Cifra destacada dentro de un SVG (por ejemplo, el total en un donut) */
 .big {
     font-size: 22px;
     font-weight: 600;
     fill: var(--fg)
 }
 
+/* .lg — Leyenda HTML: cada <span> es un ítem, cada <i> el cuadrito de color */
 .lg span {
     margin-right: 10px;
     font-size: 11px
@@ -181,22 +189,14 @@ svg {
     margin-right: 4px
 }
 
-/* #tip {
-    position: fixed;
-    pointer-events: none;
-    opacity: 0;
-    background: var(--fg);
-    color: var(--bg);
-    padding: 5px 8px;
-    border-radius: 6px;
-    font-size: 12px;
-    z-index: 9
-} */
+/*
+    TOOLTIP
+*/
 
 #tip {
     position: absolute;
-    visibility: hidden;
-    pointer-events: none;
+    visibility: hidden; /*-> oculto por defecto; el JS lo cambia a "visible" al hacer hover*/
+    pointer-events: none; /* - pointer-events: none -> el tooltip no intercepta el mouse */
     background: var(--fg);
     color: var(--bg);
     padding: 5px 8px;

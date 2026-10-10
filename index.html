@@ -10,10 +10,15 @@
 
 <body>
     <h1>Dashboard de ventas (Actividad 1)</h1>
+    <!-- creamos subtitulos que nos ayudan a indicar cuando estamos cargado los datos -->
     <p class="s" id="sub"></p>
     <div class="kp" id="kp"></div>
     <div id="tip"></div>
 
+    <!-- 
+        Conjunto de div que posteriormente contendrán los gráficos.
+        Y para cada div definimos un id que nos permitirá referenciarlo desde el código JavaScript.
+    -->
     <div class="g">
         <div class="c">
             <h2>Georreferenciación de clientes</h2>
@@ -44,6 +49,9 @@
         </div>
     </div>
 
+    <!-- 
+    Llamamos a la librería D3.js y a nuestro archivo main.js que contiene el código para generar los gráficos.
+    -->
     <script src = "https://d3js.org/d3.v7.min.js"></script>
     <script src="main.js"></script>
 </body>
